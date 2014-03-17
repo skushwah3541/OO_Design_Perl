@@ -1,6 +1,6 @@
 package Light::LivingRoom;
 use Moose;
-with 'Light';
+extends 'Light';
 
 sub on{
   my $self = shift;

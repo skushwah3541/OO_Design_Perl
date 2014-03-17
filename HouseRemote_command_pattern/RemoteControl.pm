@@ -30,13 +30,16 @@ has off_commands => (
   },
 );
 
+has undo_command => (is => 'rw', isa =>'Command');
+
 sub BUILD{
   my $self = shift;
   #initialize on and off commands to on
-  for 0..6{
+  for (0..6){
     $self->add_on_command(Command::Null->new);
     $self->add_off_command(Command::Null->new);
   }
+  $self->undo_command(Command::Null->new);
 }
 
 sub set_command{
@@ -47,14 +50,33 @@ sub set_command{
 
 sub on_button_pushed{
   my ($self, $slot) = @_;
-  $self->get_on_command($slot)->execute();
+  my $command = $self->get_on_command($slot);
+  $command->execute();
+  $self->undo_command($command);
 }
 
 sub off_button_pushed{
   my ($self, $slot) = @_;
-  $self->get_off_command($slot)->execute();
+  my $command = $self->get_off_command($slot);
+  $command->execute();
+  $self->undo_command($command);
 }
 
+sub undo_button_pushed{
+  my $self = shift;
+  $self->undo_command->undo;
+}
+
+
+sub on{
+  my $self = shift;
+  $_->execute for $self->all_on_commands;
+}
+
+sub off{
+  my $self = shift;
+  $_->execute for $self->all_off_commands;
+}
 
 sub as_string{
   my $self = shift;
@@ -64,5 +86,6 @@ sub as_string{
   }
   return $string;
 }
+
 __PACKAGE__->meta->make_immutable;
 1;

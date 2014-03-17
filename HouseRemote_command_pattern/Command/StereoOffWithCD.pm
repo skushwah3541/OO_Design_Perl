@@ -1,17 +1,17 @@
-package Command::LightOn;
+package Command::StereoOffWithCD;
 use Moose;
 with 'Command';
 
-has light => (is => 'rw', isa => 'Light');
+has stereo => (is => 'rw');
 
 sub execute{
   my $self = shift;
-  $self->light->on;
+  $self->stereo->off;
 }
 
 sub undo{
   my $self = shift;
-  $self->light->off;
+  $self->stereo->on;
 }
 
 __PACKAGE__->meta->make_immutable;
